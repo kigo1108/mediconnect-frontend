@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
+
 
 export default function LoginPage() {
   // 1. Khai báo kho chứa dữ liệu gõ vào
@@ -89,6 +90,9 @@ export default function LoginPage() {
           ĐĂNG NHẬP
         </button>
       </form>
+      <div style={{ marginTop: '20px', fontSize: '14px' }}>
+        Chưa có tài khoản? <Link to="/register" style={{ color: '#10b981', textDecoration: 'none', fontWeight: 'bold' }}>Đăng ký ngay</Link>
+      </div>
     </div>
   );
 }

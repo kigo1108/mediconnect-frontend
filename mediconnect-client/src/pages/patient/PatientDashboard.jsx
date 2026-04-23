@@ -5,25 +5,19 @@ import { Link } from 'react-router-dom';
 export default function PatientDashboard({ token }) {
   const [danhSachLich, setDanhSachLich] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedReschedule, setSelectedReschedule] = useState(null); 
 
   const axiosConfig = { headers: { 'Authorization': `Bearer ${token}` } };
 
-  // Từ điển dịch trạng thái từ Enum C# (0-4) sang Tiếng Việt và Màu sắc
   const getStatusInfo = (statusRaw) => {
     const s = String(statusRaw).toLowerCase();
     switch (s) {
-      case '0': case 'scheduled':
-        return { text: 'Chờ Check-in', color: '#ffc107', bg: '#fffdf5' };
-      case '1': case 'checkedin':
-        return { text: 'Đã lấy số', color: '#17a2b8', bg: '#f0faff' };
-      case '2': case 'inprogress':
-        return { text: 'Đang khám', color: '#6f42c1', bg: '#f8f5ff' };
-      case '3': case 'completed':
-        return { text: 'Đã hoàn thành', color: '#28a745', bg: '#f6fff8' };
-      case '4': case 'canceled':
-        return { text: 'Đã hủy', color: '#dc3545', bg: '#fff5f5' };
-      default:
-        return { text: 'N/A', color: '#6c757d', bg: '#f8f9fa' };
+      case '0': case 'scheduled': return { text: 'Chờ Check-in', color: '#ffc107', bg: '#fffdf5' };
+      case '1': case 'checkedin': return { text: 'Đã lấy số', color: '#17a2b8', bg: '#f0faff' };
+      case '2': case 'inprogress': return { text: 'Đang khám', color: '#6f42c1', bg: '#f8f5ff' };
+      case '3': case 'completed': return { text: 'Đã hoàn thành', color: '#28a745', bg: '#f6fff8' };
+      case '4': case 'canceled': return { text: 'Đã hủy', color: '#dc3545', bg: '#fff5f5' };
+      default: return { text: 'N/A', color: '#6c757d', bg: '#f8f9fa' };
     }
   };
 
@@ -45,66 +39,55 @@ export default function PatientDashboard({ token }) {
   const handleCheckIn = async (appointmentId) => {
     try {
       const res = await axios.post(`https://localhost:7071/api/Appointment/${appointmentId}/check-in`, {}, axiosConfig);
-      alert(`✅ Thành công! Số thứ tự của bạn là: ${res.data.QueueNumber || res.data.queueNumber}`);
+      alert(`✅ Thành công! Số thứ tự là: ${res.data.QueueNumber || res.data.queueNumber}`);
       layDanhSachLichCuaToi();
     } catch (err) {
       alert(err.response?.data?.message || "Lỗi Check-in");
     }
   };
+  const handleCancel = async (appointmentId) => {
+  // Bật popup xác nhận để tránh bệnh nhân bấm nhầm
+  if (!window.confirm("⚠️ Bạn có chắc chắn muốn hủy lịch hẹn này không? Hành động này không thể hoàn tác.")) return;
+
+  try {
+    await axios.put(`https://localhost:7071/api/Appointment/Cancel/${appointmentId}`, {}, axiosConfig);
+    alert("✅ Đã hủy lịch hẹn thành công!");
+    layDanhSachLichCuaToi(); // Tự động load lại bảng để thấy trạng thái chuyển sang "Đã hủy" màu đỏ
+  } catch (err) {
+    alert("❌ Lỗi: " + (err.response?.data?.message || "Không thể hủy lịch này."));
+  }
+};
+
+  // 🔴 THÊM HÀM NÀY: Mở Modal đổi lịch thông qua API GetById
+  const openRescheduleModal = async (appointmentId) => {
+    try {
+      // 1. Gọi API GetById để lấy chính xác DoctorId
+      const res = await axios.get(`https://localhost:7071/api/Appointment/GetById/${appointmentId}`, axiosConfig);
+      const detail = res.data.data || res.data.Data;
+      
+      // 2. Truyền đúng dữ liệu vào Modal
+      setSelectedReschedule({
+        id: detail.appointmentId || detail.AppointmentId || appointmentId,
+        doctorId: detail.doctorId || detail.DoctorId // Chắc chắn 100% có biến này vì GetById trả về đầy đủ
+      });
+    } catch (err) {
+      alert("❌ Lỗi lấy thông tin lịch hẹn: " + (err.response?.data?.message || err.message));
+    }
+  };
 
   return (
     <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '30px' }}>
-      
-      {/* HEADER SECTION */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '30px' }}>
         <div>
           <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '28px' }}>👋 Xin chào Bệnh nhân</h2>
           <p style={{ margin: '5px 0 0', color: '#7f8c8d' }}>Chào mừng bạn quay lại hệ thống MediConnect</p>
         </div>
-        <Link to="/dat-lich" style={{ 
-          padding: '12px 24px', background: '#28a745', color: 'white', 
-          textDecoration: 'none', borderRadius: '8px', fontWeight: 'bold',
-          boxShadow: '0 4px 6px rgba(40, 167, 69, 0.2)' 
-        }}>
-          ➕ Đặt lịch khám mới
-        </Link>
+        <Link to="/dat-lich" style={btnLinkStyle}>➕ Đặt lịch khám mới</Link>
       </div>
 
-      {/* QUICK STATS / NAVIGATION */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '40px' }}>
-        <div style={statCardStyle}>
-          <span style={{ fontSize: '24px' }}>📅</span>
-          <h4 style={{ margin: '10px 0' }}>Lịch hẹn sắp tới</h4>
-          <p style={{ fontSize: '20px', fontWeight: 'bold', margin: 0 }}>
-            {danhSachLich.filter(l => String(l.Status || l.status) === '0').length}
-          </p>
-        </div>
-        <Link to="/ho-so-ca-nhan" style={{ ...statCardStyle, textDecoration: 'none', color: 'inherit' }}>
-          <span style={{ fontSize: '24px' }}>👤</span>
-          <h4 style={{ margin: '10px 0' }}>Hồ sơ cá nhân</h4>
-          <p style={{ fontSize: '14px', color: '#007bff' }}>Cập nhật thông tin →</p>
-        </Link>
-        <Link to="/lich-su-kham" style={{ ...statCardStyle, textDecoration: 'none', color: 'inherit' }}>
-          <span style={{ fontSize: '24px' }}>📜</span>
-          <h4 style={{ margin: '10px 0' }}>Lịch sử bệnh án</h4>
-          <p style={{ fontSize: '14px', color: '#007bff' }}>Xem chi tiết đơn thuốc →</p>
-        </Link>
-        <Link to="/xem-lich-bac-si" style={{ ...statCardStyle, textDecoration: 'none', color: 'inherit' }}>
-          <span style={{ fontSize: '24px' }}>👨‍⚕️</span>
-          <h4 style={{ margin: '10px 0' }}>Tra cứu Bác sĩ</h4>
-          <p style={{ fontSize: '14px', color: '#007bff' }}>Xem lịch trực chuyên gia →</p>
-        </Link>
-      </div>
-
-      {/* APPOINTMENT TABLE */}
-      <div style={{ backgroundColor: 'white', padding: '25px', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)' }}>
-        <h3 style={{ marginTop: 0, marginBottom: '20px', display: 'flex', alignItems: 'center' }}>
-          <span style={{ marginRight: '10px' }}>📝</span> Quản lý lịch hẹn khám
-        </h3>
-        
-        {loading ? (
-          <p>⏳ Đang tải dữ liệu...</p>
-        ) : danhSachLich.length === 0 ? (
+      <div style={containerStyle}>
+        <h3 style={{ marginTop: 0, marginBottom: '20px' }}>📝 Quản lý lịch hẹn khám</h3>
+        {loading ? <p>⏳ Đang tải dữ liệu...</p> : danhSachLich.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '40px' }}>
             <p style={{ color: '#95a5a6' }}>Bạn chưa có lịch hẹn nào. Hãy đặt lịch ngay!</p>
           </div>
@@ -125,12 +108,12 @@ export default function PatientDashboard({ token }) {
                 const statusInfo = getStatusInfo(lich.Status || lich.status);
                 const statusStr = String(lich.Status || lich.status).toLowerCase();
                 
-                const today = new Date();
-                const isToday = dateObj.toDateString() === today.toDateString();
+                const isToday = dateObj.toDateString() === new Date().toDateString();
                 const canCheckIn = (statusStr === '0' || statusStr === 'scheduled') && isToday;
+                const canReschedule = statusStr === '0' || statusStr === 'scheduled';
 
                 return (
-                  <tr key={i} style={{ borderBottom: '1px solid #f9f9f9', transition: '0.3s' }}>
+                  <tr key={i} style={{ borderBottom: '1px solid #f9f9f9' }}>
                     <td style={tdStyle}>
                       <div style={{ fontWeight: 'bold', color: '#2c3e50' }}>{dateObj.toLocaleDateString('vi-VN')}</div>
                       <div style={{ fontSize: '13px', color: '#95a5a6' }}>{dateObj.toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})}</div>
@@ -153,13 +136,31 @@ export default function PatientDashboard({ token }) {
                       </span>
                     </td>
                     <td style={tdStyle}>
-                      {canCheckIn ? (
-                        <button onClick={() => handleCheckIn(lich.AppointmentId || lich.appointmentId)} style={btnCheckInStyle}>
-                          Check-in
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        {canCheckIn && (
+                          <button onClick={() => handleCheckIn(lich.AppointmentId || lich.appointmentId)} style={btnCheckInStyle}>
+                            Check-in
+                          </button>
+                        )}
+                        {canReschedule && (
+                          <button 
+                            // 🔴 SỬ DỤNG HÀM MỚI Ở ĐÂY
+                            onClick={() => openRescheduleModal(lich.AppointmentId || lich.appointmentId)}
+                            style={{ ...btnCheckInStyle, background: '#6c757d' }}
+                          >
+                            Đổi lịch
+                          </button>
+                        )}
+                        {canReschedule && (
+                        <button 
+                          onClick={() => handleCancel(lich.AppointmentId || lich.appointmentId)}
+                          style={{ ...btnCheckInStyle, background: '#dc3545' }} // Màu đỏ cảnh báo
+                        >
+                          ❌ Hủy
                         </button>
-                      ) : (statusStr === '0' || statusStr === 'scheduled') && !isToday ? (
-                        <span style={lockLabelStyle}>Chưa đến ngày</span>
-                      ) : <span style={{ color: '#bdc3c7' }}>-</span>}
+                      )}
+                        {!canCheckIn && !canReschedule && <span style={{ color: '#bdc3c7' }}>-</span>}
+                      </div>
                     </td>
                   </tr>
                 );
@@ -168,25 +169,76 @@ export default function PatientDashboard({ token }) {
           </table>
         )}
       </div>
+
+      {selectedReschedule && (
+        <RescheduleModal 
+          appointment={selectedReschedule} 
+          token={token} 
+          onClose={() => setSelectedReschedule(null)} 
+          onSuccess={() => { setSelectedReschedule(null); layDanhSachLichCuaToi(); }} 
+        />
+      )}
     </div>
   );
 }
 
-// CSS OBJECTS
-const statCardStyle = {
-  backgroundColor: 'white', padding: '20px', borderRadius: '12px',
-  boxShadow: '0 4px 15px rgba(0,0,0,0.05)', textAlign: 'center', border: '1px solid #f1f1f1'
-};
+function RescheduleModal({ appointment, token, onClose, onSuccess }) {
+  const [newDate, setNewDate] = useState('');
+  const [availableTimes, setAvailableTimes] = useState([]);
+  const [selectedTime, setSelectedTime] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    // Chỉ gọi API khi có đủ cả newDate và doctorId (doctorId bây giờ chắc chắn khác undefined)
+    if (newDate && appointment.doctorId) {
+      axios.get(`https://localhost:7071/api/Schedule/Get_Doctor_Schedule?doctorId=${appointment.doctorId}&date=${newDate}`)
+        .then(res => setAvailableTimes((res.data.data || res.data.Data || []).filter(ca => !ca.IsCancelled && !ca.isCancelled)))
+        .catch(() => setAvailableTimes([]));
+    }
+  }, [newDate, appointment.doctorId]);
+
+  const handleConfirm = async () => {
+    setSaving(true);
+    try {
+      await axios.put('https://localhost:7071/api/Appointment/Reschedule', {
+        appointmentId: appointment.id,
+        newAppointmentDate: `${newDate}T${selectedTime}`
+      }, { headers: { 'Authorization': `Bearer ${token}` } });
+      alert("✅ Đã đổi lịch khám!");
+      onSuccess();
+    } catch (err) {
+      alert(err.response?.data?.message || "Lỗi đổi lịch");
+    } finally { setSaving(false); }
+  };
+
+  return (
+    <div style={modalStyle}>
+      <div style={contentStyle}>
+        <h4 style={{marginTop: 0}}>📅 Chọn thời gian khám mới</h4>
+        <input type="date" min={new Date().toISOString().split('T')[0]} value={newDate} onChange={e => setNewDate(e.target.value)} style={inputFullStyle} />
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '15px' }}>
+          {availableTimes.map((ca, i) => (
+            <button key={i} onClick={() => setSelectedTime(ca.startTime || ca.StartTime)} 
+              style={{ padding: '8px', border: '1px solid #007bff', borderRadius: '4px', background: selectedTime === (ca.startTime || ca.StartTime) ? '#007bff' : 'white', color: selectedTime === (ca.startTime || ca.StartTime) ? 'white' : '#007bff', cursor: 'pointer' }}>
+              {(ca.startTime || ca.StartTime).substring(0, 5)}
+            </button>
+          ))}
+        </div>
+        <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+          <button onClick={handleConfirm} disabled={!selectedTime || saving} style={{ flex: 1, padding: '10px', background: '#28a745', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}>Xác nhận</button>
+          <button onClick={onClose} style={{ flex: 1, padding: '10px', background: '#6c757d', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}>Hủy</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const containerStyle = { backgroundColor: 'white', padding: '25px', borderRadius: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.05)' };
 const thStyle = { padding: '15px', color: '#7f8c8d', fontSize: '14px', fontWeight: '600' };
 const tdStyle = { padding: '15px', verticalAlign: 'middle' };
-const queueBadgeStyle = {
-  width: '32px', height: '32px', borderRadius: '50%', background: '#28a745', 
-  color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold'
-};
-const btnCheckInStyle = {
-  padding: '8px 16px', background: '#007bff', color: 'white', border: 'none', 
-  borderRadius: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '13px'
-};
-const lockLabelStyle = {
-  fontSize: '11px', color: '#856404', background: '#fff3cd', padding: '4px 8px', borderRadius: '4px'
-};
+const queueBadgeStyle = { width: '32px', height: '32px', borderRadius: '50%', background: '#28a745', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' };
+const btnCheckInStyle = { padding: '8px 16px', background: '#007bff', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '13px' };
+const btnLinkStyle = { padding: '12px 24px', background: '#28a745', color: 'white', textDecoration: 'none', borderRadius: '8px', fontWeight: 'bold' };
+const modalStyle = { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 };
+const contentStyle = { background: 'white', padding: '25px', borderRadius: '12px', width: '400px' };
+const inputFullStyle = { width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ddd', boxSizing: 'border-box' };

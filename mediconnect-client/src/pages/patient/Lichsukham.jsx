@@ -1,6 +1,26 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const getValue = (obj, keys, fallback = null) => {
+  for (const key of keys) {
+    if (obj?.[key] !== undefined && obj?.[key] !== null) return obj[key];
+  }
+  return fallback;
+};
+
+const isCompletedRecord = (item) => {
+  const draftValue = getValue(item, ['isDraft', 'IsDraft'], null);
+  if (draftValue !== null) return draftValue === false;
+
+  const statusText = `${getValue(item, ['status', 'Status', 'recordStatus', 'RecordStatus', 'statusText', 'StatusText'], '')}`.toLowerCase();
+  if (statusText === 'completed' || statusText === 'complete') return true;
+
+  const statusNumber = Number(
+    getValue(item, ['status', 'Status', 'recordStatus', 'RecordStatus'], Number.NaN)
+  );
+  return statusNumber === 1;
+};
+
 export default function LichSuKham({ token }) {
   const [history, setHistory] = useState([]);
   const [selectedRecord, setSelectedRecord] = useState(null);
@@ -14,10 +34,16 @@ export default function LichSuKham({ token }) {
   }, [token]);
 
   const fetchHistory = async () => {
-    if (!token) return;
+    if (!token) {
+      alert("⚠️ Lỗi: Không có Token đăng nhập!");
+      setHistory([]);
+      setLoading(false);
+      return;
+    }
     try {
       const res = await axios.get('https://localhost:7071/api/Appointment/Get_History', axiosConfig);
-      setHistory(res.data.data || res.data.Data || []);
+      const rawHistory = res.data.data || res.data.Data || [];
+      setHistory(rawHistory);
     } catch (err) {
       console.error("Lỗi tải lịch sử:", err);
       setHistory([]);
@@ -65,7 +91,7 @@ export default function LichSuKham({ token }) {
 
       {history.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '50px', backgroundColor: '#f8f9fa', borderRadius: '15px', border: '2px dashed #dee2e6' }}>
-          <p style={{ color: '#6c757d', fontSize: '18px' }}>Bạn chưa có lịch sử khám chữa bệnh nào.</p>
+          <p style={{ color: '#6c757d', fontSize: '18px' }}>Bạn chưa có hồ sơ khám nào ở trạng thái hoàn thành.</p>
         </div>
       ) : (
         <div style={{ display: 'grid', gap: '15px' }}>

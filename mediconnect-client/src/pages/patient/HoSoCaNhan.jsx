@@ -12,7 +12,7 @@ export default function HoSoCaNhan({ token }) {
     dateOfBirth: '',
     nationalId: '',
     phoneNumber: '',
-    isMale: true       // Map với bool? IsMale
+    isMale: ''     
   });
 
   const axiosConfig = { headers: { 'Authorization': `Bearer ${token}` } };
@@ -73,7 +73,7 @@ export default function HoSoCaNhan({ token }) {
           <p><strong>Ngày sinh:</strong> {profile?.dateOfBirth ? new Date(profile.dateOfBirth).toLocaleDateString('vi-VN') : '---'}</p>
           <p><strong>Số CCCD:</strong> {profile?.nationalId || 'Chưa cập nhật'}</p>
           <p><strong>Số điện thoại:</strong> {profile?.phoneNumber || 'Chưa cập nhật'}</p>
-          <p><strong>Giới tính:</strong> {profile?.isMale === true ? 'Nam' : 'Nữ'}</p>
+          <p><strong>Giới tính:</strong> {profile?.sex || 'Chưa cập nhật'}</p>
           
           <button onClick={() => setIsEditing(true)} style={btnPrimaryStyle}>
             Chỉnh sửa hồ sơ

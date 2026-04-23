@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// Import 4 mảnh ghép (Bắt buộc 4 file này phải có chữ 'export default' ở trong nhé)
+import DashboardAnalytics from "./DashboardAnalytics";
 import QuanLyKhoa from "./QuanLyKhoa";
 import QuanLyThuoc from "./QuanLyThuoc";
 import QuanLyNhanSu from "./QuanLyNhanSu";
@@ -9,7 +9,7 @@ import QuanLyLichTruc from "./QuanLyLichTruc";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('khoa');
+  const [activeTab, setActiveTab] = useState('thongke');
   const token = localStorage.getItem('token');
 
   // Kiểm tra quyền truy cập
@@ -23,6 +23,7 @@ export default function AdminDashboard() {
   // Bộ điều hướng nội dung
   const renderContent = () => {
     switch (activeTab) {
+      case 'thongke': return <DashboardAnalytics token={token} />;
       case 'khoa': return <QuanLyKhoa token={token} />;
       case 'thuoc': return <QuanLyThuoc token={token} />;
       case 'nhansu': return <QuanLyNhanSu token={token} />;
@@ -39,7 +40,8 @@ export default function AdminDashboard() {
         <h3 style={{ textAlign: 'center', color: '#f39c12', marginBottom: '30px' }}>👑 ADMIN PANEL</h3>
         
         <ul style={{ listStyle: 'none', padding: 0 }}>
-          {['khoa', 'thuoc', 'nhansu', 'lichtruc'].map((tab) => (
+          {/* 🔴 Thêm 'thongke' vào mảng các Tab */}
+          {['thongke', 'khoa', 'thuoc', 'nhansu', 'lichtruc'].map((tab) => (
             <li key={tab} style={{ marginBottom: '15px' }}>
               <button 
                 onClick={() => setActiveTab(tab)} 
@@ -48,7 +50,11 @@ export default function AdminDashboard() {
                   background: activeTab === tab ? '#34495e' : 'transparent', 
                   color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' 
                 }}>
-                {tab === 'khoa' ? '🏥 Quản lý Khoa' : tab === 'thuoc' ? '💊 Quản lý Thuốc' : tab === 'nhansu' ? '👨‍⚕️ Quản lý Nhân sự' : '📅 Phân ca trực'}
+                {/* 🔴 Render tên Tab tương ứng */}
+                {tab === 'thongke' ? '📊 Tổng quan (Dashboard)' : 
+                 tab === 'khoa' ? '🏥 Quản lý Khoa' : 
+                 tab === 'thuoc' ? '💊 Quản lý Thuốc' : 
+                 tab === 'nhansu' ? '👨‍⚕️ Quản lý Nhân sự' : '📅 Phân ca trực'}
               </button>
             </li>
           ))}

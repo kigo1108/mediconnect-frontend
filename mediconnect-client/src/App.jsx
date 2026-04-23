@@ -1,9 +1,11 @@
 import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
 import { useState } from 'react';
 
+
 // === 1. CORE & AUTH ===
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
 
 // === 2. PATIENT PORTAL ===
 import PatientDashboard from './pages/patient/PatientDashboard';
@@ -15,6 +17,7 @@ import XemLichBacSi from './pages/patient/XemLichBacSi';
 // === 3. DOCTOR PORTAL ===
 import DoctorDashboard from './pages/doctor/DoctorDashboard';
 import ExaminationPage from './pages/doctor/ExaminationPage';
+import PrintPrescription from './pages/doctor/PrintPrescription';
 
 // === 4. ADMIN PORTAL ===
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -22,6 +25,7 @@ import QuanLyKhoa from './pages/admin/QuanLyKhoa';
 import QuanLyThuoc from './pages/admin/QuanLyThuoc';
 import QuanLyNhanSu from './pages/admin/QuanLyNhanSu';
 import QuanLyLichTruc from './pages/admin/QuanLyLichTruc';
+import InvoicePage from './pages/InvoicePage';
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token') || '');
@@ -53,8 +57,10 @@ function App() {
               {isRole('Patient') && (
                 <>
                   <Link to="/patient" style={linkStyle}>Lịch hẹn</Link>
+                  <Link to="/ho-so-ca-nhan" style={linkStyle}>Hồ sơ cá nhân</Link>
                   <Link to="/xem-lich-bac-si" style={linkStyle}>Tra cứu bác sĩ</Link>
                   <Link to="/lich-su-kham" style={linkStyle}>Sổ khám</Link>
+                  <Link to="/invoices" style={linkStyle}>Thanh toán</Link>
                   <Link to="/dat-lich" style={btnOrderStyle}>➕ Đặt lịch ngay</Link>
                 </>
               )}
@@ -64,7 +70,10 @@ function App() {
               )}
 
               {isRole('Admin') && (
-                <Link to="/admin" style={linkStyle}>📊 Trang quản trị</Link>
+                <>
+                  <Link to="/admin" style={linkStyle}>📊 Trang quản trị</Link>
+                  <Link to="/invoices" style={linkStyle}>💳 Thu ngân</Link>
+                </>
               )}
 
               <button onClick={handleLogout} style={btnLogoutStyle}>Đăng xuất</button>
@@ -79,6 +88,7 @@ function App() {
           {/* Trang chủ & Đăng nhập */}
           <Route path="/" element={<HomePage token={token} role={role} />} />
           <Route path="/login" element={<LoginPage setToken={setToken} setRole={setRole} />} />
+          <Route path="/register" element={<RegisterPage />} />
           
           {/* Routes Bệnh Nhân */}
           <Route path="/patient" element={<PatientDashboard token={token} />} />
@@ -86,10 +96,13 @@ function App() {
           <Route path="/ho-so-ca-nhan" element={<HoSoCaNhan token={token} />} />
           <Route path="/lich-su-kham" element={<LichSuKham token={token} />} />
           <Route path="/xem-lich-bac-si" element={<XemLichBacSi token={token} />} />
+          <Route path="/invoices" element={<InvoicePage token={token} role={role} />} />
 
           {/* Routes Bác Sĩ */}
           <Route path="/doctor" element={<DoctorDashboard token={token} />} />
           <Route path="/exam/:appointmentId" element={<ExaminationPage token={token} />} />
+          <Route path="/print/:recordId" element={<PrintPrescription token={token} />} />
+
 
           {/* Routes Admin */}
           <Route path="/admin" element={<AdminDashboard token={token} />} />
@@ -99,7 +112,7 @@ function App() {
           <Route path="/admin/lich-truc" element={<QuanLyLichTruc token={token} />} />
 
           {/* Mặc định quay về Home */}
-          <Route path="*" element={<Navigate to="/" />} />
+          {/* <Route path="*" element={<Navigate to="/" />} /> */}
         </Routes>
       </div>
     </BrowserRouter>

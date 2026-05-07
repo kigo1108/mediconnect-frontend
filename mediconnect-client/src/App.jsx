@@ -10,7 +10,7 @@ import RegisterPage from './pages/auth/RegisterPage';
 import PatientDashboard from './pages/patient/PatientDashboard';
 import DatLichKham from './pages/patient/DatLichKham';
 import HoSoCaNhan from './pages/patient/HoSoCaNhan';
-import LichSuKham from './pages/patient/LichSuKham';
+import LichSuKham from './pages/patient/Lichsukham';
 import XemLichBacSi from './pages/patient/XemLichBacSi';
 
 // === 3. DOCTOR PORTAL ===

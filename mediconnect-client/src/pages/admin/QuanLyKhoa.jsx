@@ -54,7 +54,7 @@ export default function QuanLyKhoa({ token }) {
   const xuLyXoaKhoa = async (id, name) => {
     if (!window.confirm(`⚠️ Bạn có chắc muốn xóa khoa "${name}"?`)) return;
     try {
-      await axios.delete(`${API_BASE_URL}/api/Department/Delete_Department/${id}1`, axiosConfig);
+      await axios.delete(`${API_BASE_URL}/api/Department/Delete_Department/${id}`, axiosConfig);
       alert("✅ Đã chuyển khoa vào Thùng rác!");
       layDanhSachKhoa();
     } catch (err) { // 4. Xử lý bắt lỗi từ Backend trả về

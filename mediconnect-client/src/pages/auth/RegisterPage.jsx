@@ -4,10 +4,13 @@ import { useNavigate, Link } from 'react-router-dom';
 
 export default function RegisterPage() {
   // 1. Khai báo state lưu dữ liệu người dùng nhập
+  const [step, setStep] = useState(1); // Quản lý màn hình: 1 = Đăng ký, 2 = Nhập OTP
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState(''); // Thêm trường Email
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [otpCode, setOtpCode] = useState(''); // Thêm trường OTP
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -28,14 +31,15 @@ export default function RegisterPage() {
       const payload = {
         FullName: fullName,
         Username: username,
+        Email: email, // Bắn thêm Email lên Backend
         Password: password
       };
 
       const response = await axios.post('https://localhost:7071/api/Auth/register', payload);
       
-      // Thành công
-      alert("✅ Đăng ký thành công! Vui lòng đăng nhập.");
-      navigate('/login'); // Chuyển hướng sang trang đăng nhập
+      // Thành công thì chuyển sang bước 2 (Nhập OTP)
+      alert("✅ Đã gửi mã OTP về Email của bạn. Vui lòng kiểm tra!");
+      setStep(2); 
 
     } catch (err) {
       console.error("Lỗi đăng ký:", err);
@@ -45,67 +49,79 @@ export default function RegisterPage() {
     }
   };
 
-  // 3. Giao diện Form
+  // 3. Hàm xử lý Xác thực OTP
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await axios.post('https://localhost:7071/api/Auth/verify-otp', {
+        email: email, 
+        otpCode: otpCode
+      });
+      
+      if (response.data.success) {
+        alert('✅ Xác thực thành công! Giờ bạn có thể đăng nhập.');
+        navigate('/login'); // Xác thực xong mới đá sang trang Login
+      }
+    } catch (err) {
+      alert("❌ " + (err.response?.data?.message || 'Mã OTP sai hoặc đã hết hạn'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 4. Giao diện Form
   return (
     <div style={{ padding: '40px', maxWidth: '400px', margin: '50px auto', textAlign: 'center', border: '1px solid #e0e0e0', borderRadius: '12px', backgroundColor: 'white', boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }}>
-      <h2 style={{ color: '#10b981', marginBottom: '10px' }}>Tạo Tài Khoản Mới</h2>
-      <p style={{ color: '#6b7280', marginBottom: '30px', fontSize: '14px' }}>Tham gia hệ thống MediConnect ngay hôm nay</p>
       
-      <form onSubmit={handleRegister}>
-        <div style={{ marginBottom: '15px' }}>
-          <input 
-            type="text" 
-            placeholder="Họ và tên (Ví dụ: Nguyễn Văn A)" 
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            style={inputStyle}
-            required
-          />
-        </div>
-        <div style={{ marginBottom: '15px' }}>
-          <input 
-            type="text" 
-            placeholder="Tên đăng nhập" 
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            style={inputStyle}
-            required
-          />
-        </div>
-        <div style={{ marginBottom: '15px' }}>
-          <input 
-            type="password" 
-            placeholder="Mật khẩu" 
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={inputStyle}
-            required
-            minLength="6"
-          />
-        </div>
-        <div style={{ marginBottom: '25px' }}>
-          <input 
-            type="password" 
-            placeholder="Xác nhận lại mật khẩu" 
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            style={inputStyle}
-            required
-            minLength="6"
-          />
-        </div>
-        
-        <button 
-          type="submit" 
-          disabled={loading}
-          style={{ width: '100%', padding: '12px', backgroundColor: loading ? '#ccc' : '#10b981', color: 'white', border: 'none', borderRadius: '8px', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '15px' }}>
-          {loading ? 'ĐANG XỬ LÝ...' : 'ĐĂNG KÝ NGAY'}
-        </button>
-      </form>
+      {step === 1 ? (
+        <>
+          <h2 style={{ color: '#10b981', marginBottom: '10px' }}>Tạo Tài Khoản Mới</h2>
+          <p style={{ color: '#6b7280', marginBottom: '30px', fontSize: '14px' }}>Tham gia hệ thống MediConnect ngay hôm nay</p>
+          
+          <form onSubmit={handleRegister}>
+            <div style={{ marginBottom: '15px' }}>
+              <input type="text" placeholder="Họ và tên (Ví dụ: Nguyễn Văn A)" value={fullName} onChange={(e) => setFullName(e.target.value)} style={inputStyle} required />
+            </div>
+            <div style={{ marginBottom: '15px' }}>
+              <input type="text" placeholder="Tên đăng nhập" value={username} onChange={(e) => setUsername(e.target.value)} style={inputStyle} required />
+            </div>
+            <div style={{ marginBottom: '15px' }}>
+              {/* Ô nhập Email mới */}
+              <input type="email" placeholder="Địa chỉ Email" value={email} onChange={(e) => setEmail(e.target.value)} style={inputStyle} required />
+            </div>
+            <div style={{ marginBottom: '15px' }}>
+              <input type="password" placeholder="Mật khẩu" value={password} onChange={(e) => setPassword(e.target.value)} style={inputStyle} required minLength="6" />
+            </div>
+            <div style={{ marginBottom: '25px' }}>
+              <input type="password" placeholder="Xác nhận lại mật khẩu" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} style={inputStyle} required minLength="6" />
+            </div>
+            
+            <button type="submit" disabled={loading} style={{ width: '100%', padding: '12px', backgroundColor: loading ? '#ccc' : '#10b981', color: 'white', border: 'none', borderRadius: '8px', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '15px' }}>
+              {loading ? 'ĐANG XỬ LÝ...' : 'ĐĂNG KÝ NGAY'}
+            </button>
+          </form>
 
-      <div style={{ marginTop: '25px', fontSize: '14px', color: '#6b7280' }}>
-        Đã có tài khoản? <Link to="/login" style={{ color: '#007bff', textDecoration: 'none', fontWeight: 'bold' }}>Đăng nhập ngay</Link>
-      </div>
+          <div style={{ marginTop: '25px', fontSize: '14px', color: '#6b7280' }}>
+            Đã có tài khoản? <Link to="/login" style={{ color: '#007bff', textDecoration: 'none', fontWeight: 'bold' }}>Đăng nhập ngay</Link>
+          </div>
+        </>
+      ) : (
+        <>
+          <h2 style={{ color: '#10b981', marginBottom: '10px' }}>Xác Thực Email</h2>
+          <p style={{ color: '#6b7280', marginBottom: '30px', fontSize: '14px' }}>Chúng tôi đã gửi mã 6 số tới email <b>{email}</b></p>
+          
+          <form onSubmit={handleVerifyOtp}>
+            <div style={{ marginBottom: '25px' }}>
+              <input type="text" placeholder="Nhập mã OTP (6 số)" value={otpCode} onChange={(e) => setOtpCode(e.target.value)} maxLength="6" style={{ ...inputStyle, textAlign: 'center', fontSize: '20px', letterSpacing: '3px' }} required />
+            </div>
+            
+            <button type="submit" disabled={loading} style={{ width: '100%', padding: '12px', backgroundColor: loading ? '#ccc' : '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '15px' }}>
+              {loading ? 'ĐANG KIỂM TRA...' : 'XÁC NHẬN OTP'}
+            </button>
+          </form>
+        </>
+      )}
     </div>
   );
 }

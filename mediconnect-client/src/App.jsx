@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
 import { useState } from 'react';
 
-
 // === 1. CORE & AUTH ===
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/auth/LoginPage';
@@ -27,6 +26,14 @@ import QuanLyNhanSu from './pages/admin/QuanLyNhanSu';
 import QuanLyLichTruc from './pages/admin/QuanLyLichTruc';
 import InvoicePage from './pages/InvoicePage';
 
+// === 5. Notification ===
+import NotificationBell from './components/NotificationBell';
+
+
+// === 6. Payment ===
+import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentFailed from './pages/PaymentFailed';
+
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token') || '');
   const [role, setRole] = useState(localStorage.getItem('role') || '');
@@ -42,6 +49,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      
       {/* NAVBAR TRANG TRÍ */}
       <nav style={navStyle}>
         <Link to="/" style={{ fontWeight: '800', fontSize: '22px', color: 'white', textDecoration: 'none' }}>
@@ -72,9 +80,10 @@ function App() {
               {isRole('Admin') && (
                 <>
                   <Link to="/admin" style={linkStyle}>📊 Trang quản trị</Link>
-                  <Link to="/invoices" style={linkStyle}>💳 Thu ngân</Link>
+                  {/* <Link to="/invoices" style={linkStyle}>💳 Thu ngân</Link> */}
                 </>
               )}
+              {token && <NotificationBell />}
 
               <button onClick={handleLogout} style={btnLogoutStyle}>Đăng xuất</button>
             </>
@@ -103,7 +112,6 @@ function App() {
           <Route path="/exam/:appointmentId" element={<ExaminationPage token={token} />} />
           <Route path="/print/:recordId" element={<PrintPrescription token={token} />} />
 
-
           {/* Routes Admin */}
           <Route path="/admin" element={<AdminDashboard token={token} />} />
           <Route path="/admin/khoa" element={<QuanLyKhoa token={token} />} />
@@ -111,7 +119,11 @@ function App() {
           <Route path="/admin/nhan-su" element={<QuanLyNhanSu token={token} />} />
           <Route path="/admin/lich-truc" element={<QuanLyLichTruc token={token} />} />
 
-          {/* Mặc định quay về Home */}
+          {/* Routes Payment */}
+          <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/payment-failed" element={<PaymentFailed />} />
+
+          {/* Mặc định quay về Home (Bỏ comment nếu muốn dùng) */}
           {/* <Route path="*" element={<Navigate to="/" />} /> */}
         </Routes>
       </div>

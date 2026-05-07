@@ -10,11 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@microsoft/signalr": "^10.0.0",
     "axios": "^1.15.0",
     "jwt-decode": "^4.0.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.14.1",
+    "react-toastify": "^11.1.0",
     "recharts": "^3.8.1"
   },
   "devDependencies": {

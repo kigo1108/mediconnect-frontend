@@ -60,7 +60,7 @@ export default function DashboardAnalytics({ token: propToken }) {
       {/* --- PHẦN 1: CÁC CHỈ SỐ TỔNG QUAN --- */}
       <div style={gridStyle}>
         <StatCard title="Tổng bệnh nhân" value={stats.totalPatients} icon="👥" color="#4e73df" />
-        <StatCard title="Bác sĩ đang trực" value={stats.totalDoctors} icon="👨‍⚕️" color="#1cc88a" />
+        <StatCard title="Tổng số bác sĩ" value={stats.totalDoctors} icon="👨‍⚕️" color="#1cc88a" />
         <StatCard title="Lịch hôm nay" value={stats.todayAppointments} icon="📅" color="#36b9cc" />
         <StatCard title="Lịch đang chờ" value={stats.pendingAppointments} icon="⏳" color="#f6c23e" />
       </div>
@@ -91,7 +91,7 @@ export default function DashboardAnalytics({ token: propToken }) {
         <div style={chartContainerStyle}>
           <h4 style={chartTitleStyle}>📅 Xu hướng lượt khám (7 ngày gần nhất)</h4>
           <div style={{ height: '350px' }}>
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%"minWidth={0} minHeight={350}>
               <BarChart data={stats.appointmentsLast7Days || stats.AppointmentsLast7Days || []}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
                 <XAxis dataKey="label" tick={{fontSize: 12, fill: '#666'}} axisLine={false} tickLine={false} />
@@ -108,7 +108,7 @@ export default function DashboardAnalytics({ token: propToken }) {
         <div style={{ ...chartContainerStyle, flex: '1 1 300px' }}>
           <h4 style={chartTitleStyle}>🏢 Tỷ lệ khám theo Khoa</h4>
           <div style={{ height: '350px' }}>
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%"minWidth={0} minHeight={350}>
               <PieChart>
                 <Pie
                   data={stats.appointmentsByDepartment || stats.AppointmentsByDepartment || []}

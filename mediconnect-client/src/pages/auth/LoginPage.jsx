@@ -12,6 +12,8 @@ export default function LoginPage() {
   // Biến dùng để chuyển trang
   const navigate = useNavigate();
 
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
+
   // 2. Hàm kích hoạt khi bấm nút Đăng nhập
  const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,7 +23,7 @@ export default function LoginPage() {
             Password: matKhau
         };
 
-        const response = await axios.post('https://localhost:7071/api/Auth/Login', payload);
+        const response = await axios.post(`${API_BASE_URL}/api/Auth/Login`, payload);
         
         // 1. IN DỮ LIỆU GỐC RA ĐỂ XEM C# TRẢ VỀ CÁI GÌ
         console.log("Dữ liệu gốc từ C# trả về:", response.data);
@@ -53,7 +55,7 @@ export default function LoginPage() {
 
     } catch (err) {
         console.error("Lỗi đăng nhập:", err); 
-        alert("Sai tài khoản hoặc mật khẩu!");
+        alert(err.response?.data?.message||"Sai tài khoản hoặc mật khẩu!");
     }
 };
 

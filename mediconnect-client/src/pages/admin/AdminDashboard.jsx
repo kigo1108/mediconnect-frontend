@@ -6,6 +6,8 @@ import QuanLyKhoa from "./QuanLyKhoa";
 import QuanLyThuoc from "./QuanLyThuoc";
 import QuanLyNhanSu from "./QuanLyNhanSu";
 import QuanLyLichTruc from "./QuanLyLichTruc";
+// 🔴 1. IMPORT COMPONENT MỚI VÀO ĐÂY
+import PatientManagement from "./PatientManagement"; 
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -27,6 +29,8 @@ export default function AdminDashboard() {
       case 'khoa': return <QuanLyKhoa token={token} />;
       case 'thuoc': return <QuanLyThuoc token={token} />;
       case 'nhansu': return <QuanLyNhanSu token={token} />;
+      // 🔴 2. THÊM LUỒNG RENDER CHO TAB BỆNH NHÂN
+      case 'benhnhan': return <PatientManagement token={token} />; 
       case 'lichtruc': return <QuanLyLichTruc token={token} />;
       default: return <QuanLyKhoa token={token} />;
     }
@@ -40,8 +44,8 @@ export default function AdminDashboard() {
         <h3 style={{ textAlign: 'center', color: '#f39c12', marginBottom: '30px' }}>👑 ADMIN PANEL</h3>
         
         <ul style={{ listStyle: 'none', padding: 0 }}>
-          {/* 🔴 Thêm 'thongke' vào mảng các Tab */}
-          {['thongke', 'khoa', 'thuoc', 'nhansu', 'lichtruc'].map((tab) => (
+          {/* 🔴 3. THÊM 'benhnhan' VÀO MẢNG (Tôi đặt nó dưới Nhân sự cho hợp lý) */}
+          {['thongke', 'khoa', 'thuoc', 'nhansu', 'benhnhan', 'lichtruc'].map((tab) => (
             <li key={tab} style={{ marginBottom: '15px' }}>
               <button 
                 onClick={() => setActiveTab(tab)} 
@@ -50,11 +54,12 @@ export default function AdminDashboard() {
                   background: activeTab === tab ? '#34495e' : 'transparent', 
                   color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' 
                 }}>
-                {/* 🔴 Render tên Tab tương ứng */}
-                {tab === 'thongke' ? '📊 Tổng quan (Dashboard)' : 
+                {/* 🔴 4. RENDER TÊN TAB */}
+                {tab === 'thongke' ? '📊 Tổng quan' : 
                  tab === 'khoa' ? '🏥 Quản lý Khoa' : 
                  tab === 'thuoc' ? '💊 Quản lý Thuốc' : 
-                 tab === 'nhansu' ? '👨‍⚕️ Quản lý Nhân sự' : '📅 Phân ca trực'}
+                 tab === 'nhansu' ? '👨‍⚕️ Quản lý Nhân sự' : 
+                 tab === 'benhnhan' ? '👤 Quản lý Bệnh nhân' : '📅 Phân ca trực'}
               </button>
             </li>
           ))}

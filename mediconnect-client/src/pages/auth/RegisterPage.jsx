@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
-
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 export default function RegisterPage() {
   // 1. Khai báo state lưu dữ liệu người dùng nhập
   const [step, setStep] = useState(1); // Quản lý màn hình: 1 = Đăng ký, 2 = Nhập OTP
@@ -14,6 +14,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  
 
   // 2. Hàm xử lý đăng ký
   const handleRegister = async (e) => {
@@ -35,7 +36,7 @@ export default function RegisterPage() {
         Password: password
       };
 
-      const response = await axios.post('https://localhost:7071/api/Auth/register', payload);
+      const response = await axios.post(`${API_BASE_URL}/api/Auth/register`, payload);
       
       // Thành công thì chuyển sang bước 2 (Nhập OTP)
       alert("✅ Đã gửi mã OTP về Email của bạn. Vui lòng kiểm tra!");
@@ -54,7 +55,7 @@ export default function RegisterPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post('https://localhost:7071/api/Auth/verify-otp', {
+      const response = await axios.post(`${API_BASE_URL}/api/Auth/verify-otp`, {
         email: email, 
         otpCode: otpCode
       });

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 const getValue = (obj, keys, fallback = null) => {
   for (const key of keys) {
     if (obj?.[key] !== undefined && obj?.[key] !== null) return obj[key];
@@ -28,6 +29,7 @@ export default function LichSuKham({ token }) {
   const [showModal, setShowModal] = useState(false);
 
   const axiosConfig = { headers: { 'Authorization': `Bearer ${token}` } };
+  
 
   useEffect(() => {
     fetchHistory();

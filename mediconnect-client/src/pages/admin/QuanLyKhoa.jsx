@@ -33,11 +33,11 @@ export default function QuanLyKhoa({ token }) {
     try {
       if (isEditing) {
         // Gọi API Update
-        await axios.put('https://localhost:7071/api/Department/Update_Department', formData, axiosConfig);
+        await axios.put(`${API_BASE_URL}/api/Department/Update_Department`, formData, axiosConfig);
         alert("✅ Cập nhật Khoa thành công!");
       } else {
         // Gọi API Create
-        await axios.post('https://localhost:7071/api/Department/Create_Department', 
+        await axios.post(`${API_BASE_URL}/api/Department/Create_Department`, 
           { name: formData.name, description: formData.description }, 
           axiosConfig
         );
@@ -54,7 +54,7 @@ export default function QuanLyKhoa({ token }) {
   const xuLyXoaKhoa = async (id, name) => {
     if (!window.confirm(`⚠️ Bạn có chắc muốn xóa khoa "${name}"?`)) return;
     try {
-      await axios.delete(`https://localhost:7071/api/Department/Delete_Department/${id}`, axiosConfig);
+      await axios.delete(`${API_BASE_URL}/api/Department/Delete_Department/${id}1`, axiosConfig);
       alert("✅ Đã chuyển khoa vào Thùng rác!");
       layDanhSachKhoa();
     } catch (err) { // 4. Xử lý bắt lỗi từ Backend trả về
@@ -73,7 +73,7 @@ export default function QuanLyKhoa({ token }) {
   // --- THAO TÁC KHÔI PHỤC ---
   const xuLyKhoiPhuc = async (id) => {
     try {
-      await axios.put(`https://localhost:7071/api/Department/Restore_Department/${id}`, {}, axiosConfig);
+      await axios.put(`${API_BASE_URL}/api/Department/Restore_Department/${id}`, {}, axiosConfig);
       alert("✅ Khôi phục khoa thành công!");
       layDanhSachKhoa();
     } catch (err) { alert("❌ Lỗi khôi phục"); }

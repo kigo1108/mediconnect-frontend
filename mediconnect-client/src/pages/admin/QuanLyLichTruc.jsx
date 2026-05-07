@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 // Hàm tạo danh sách giờ chuẩn 24h (mỗi 30 phút)
 const generateTimeSlots = () => {
   const slots = [];
@@ -38,7 +39,7 @@ export default function QuanLyLichTruc({ token }) {
 
   const axiosConfig = { headers: { 'Authorization': `Bearer ${token}` } };
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL;
+  
 
 
   useEffect(() => {
@@ -62,7 +63,7 @@ export default function QuanLyLichTruc({ token }) {
 
   const layDanhSachLich = async () => {
     try {
-      const res = await axios.get(`https://localhost:7071/api/Schedule/Admin_Get_Schedules?doctorId=${filterDoctorId}&date=${filterDate}`, axiosConfig);
+      const res = await axios.get(`${API_BASE_URL}/api/Schedule/Admin_Get_Schedules?doctorId=${filterDoctorId}&date=${filterDate}`, axiosConfig);
       setDanhSachLich(res.data.data || res.data.Data || []);
     } catch (err) {
       setDanhSachLich([]);
@@ -86,7 +87,7 @@ export default function QuanLyLichTruc({ token }) {
       };
 
       if (editingId) {
-        await axios.put(`https://localhost:7071/api/Schedule/Update_Schedule?scheduleId=${editingId}`, payload, axiosConfig);
+        await axios.put(`${API_BASE_URL}/api/Schedule/Update_Schedule?scheduleId=${editingId}`, payload, axiosConfig);
         alert("✅ Cập nhật ca làm việc thành công!");
       } else {
         const createPayload = {
@@ -94,7 +95,7 @@ export default function QuanLyLichTruc({ token }) {
           doctorId: doctorId,
           scheduleDate: scheduleDate
         };
-        await axios.post('https://localhost:7071/api/Schedule/Create_Schedule', createPayload, axiosConfig);
+        await axios.post(`${API_BASE_URL}/api/Schedule/Create_Schedule`, createPayload, axiosConfig);
         alert("✅ Tạo ca làm việc thành công!");
       }
 
@@ -113,7 +114,7 @@ export default function QuanLyLichTruc({ token }) {
     if (!window.confirm("CẢNH BÁO: Bạn có chắc chắn muốn hủy ca trực này không? Tất cả lịch hẹn của bệnh nhân trong ca này sẽ bị hủy!")) return;
 
     try {
-      await axios.delete(`https://localhost:7071/api/Schedule/Cancel_Schedule?scheduleId=${scheduleId}`, axiosConfig);
+      await axios.delete(`${API_BASE_URL}/api/Schedule/Cancel_Schedule?scheduleId=${scheduleId}`, axiosConfig);
       alert("✅ Đã hủy ca trực và các lịch hẹn liên quan thành công!");
       layDanhSachLich();
     } catch (err) {

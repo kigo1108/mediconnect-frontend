@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function DatLichKham({ token }) {
   const [loading, setLoading] = useState(false);
@@ -24,6 +25,8 @@ export default function DatLichKham({ token }) {
   const [selectedTime, setSelectedTime] = useState('');
 
   const axiosConfig = { headers: { 'Authorization': `Bearer ${token}` } };
+
+  
 
   // 1. Tải Khoa và Toàn bộ Bác sĩ khi mới vào trang
   useEffect(() => {

@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import PatientHistorySidebar from './PatientHistorySidebar';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 const getValue = (obj, keys, fallback = '') => {
   for (const key of keys) {
     if (obj?.[key] !== undefined && obj?.[key] !== null) return obj[key];
@@ -40,7 +41,7 @@ export default function ExaminationPage({ token }) {
   const [recordId, setRecordId] = useState(null);
   const [isReadOnly, setIsReadOnly] = useState(false);
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL;
+  
 
   const [formData, setFormData] = useState({
     appointmentId,

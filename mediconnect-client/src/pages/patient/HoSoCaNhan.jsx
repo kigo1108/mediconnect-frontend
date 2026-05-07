@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function HoSoCaNhan({ token }) {
   const [profile, setProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   
-  const API_BASE_URL = import.meta.env.VITE_API_URL;
+  
   // State khớp 100% với Entity Patient.cs
   const [formData, setFormData] = useState({
     fullName: '',      // Read-only vì Constructor yêu cầu lúc tạo

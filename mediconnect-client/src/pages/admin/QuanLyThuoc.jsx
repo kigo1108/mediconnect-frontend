@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function QuanLyThuoc({ token }) {
   const [danhSachThuoc, setDanhSachThuoc] = useState([]);
@@ -16,7 +17,7 @@ export default function QuanLyThuoc({ token }) {
   }, []);
 
   const axiosConfig = { headers: { 'Authorization': `Bearer ${token}` } };
-  const API_BASE_URL = import.meta.env.VITE_API_URL;
+  
 
 
   // 1. GET: Lấy danh sách thuốc

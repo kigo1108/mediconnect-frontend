@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 
+ const API_BASE_URL = import.meta.env.VITE_API_URL;
 const formatMoney = (amount) =>
   Number(amount || 0).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 
@@ -23,7 +24,7 @@ export default function InvoicePage({ token }) {
     setLoading(true);
     try {
       // Chỉ gọi API lấy hóa đơn cá nhân
-      const res = await axios.get('https://localhost:7071/api/Invoice/my-invoices', axiosConfig);
+      const res = await axios.get(`${API_BASE_URL}/api/Invoice/my-invoices`, axiosConfig);
       setInvoices(res.data?.Data || res.data?.data || []);
     } catch (err) {
       console.error('Lỗi tải hóa đơn:', err);
@@ -54,7 +55,7 @@ export default function InvoicePage({ token }) {
     setProcessingId(invoiceId);
     
     try {
-      const res = await axios.post(`https://localhost:7071/api/Invoice/create-payment-url/${invoiceId}`, {}, axiosConfig);
+      const res = await axios.post(`${API_BASE_URL}/api/Invoice/create-payment-url/${invoiceId}`, {}, axiosConfig);
       
       if (res.data && res.data.paymentUrl) {
         window.location.href = res.data.paymentUrl;

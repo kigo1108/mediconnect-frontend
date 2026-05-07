@@ -2,7 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
-
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function LoginPage() {
   // 1. Khai báo kho chứa dữ liệu gõ vào
@@ -12,7 +12,7 @@ export default function LoginPage() {
   // Biến dùng để chuyển trang
   const navigate = useNavigate();
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL;
+  
 
   // 2. Hàm kích hoạt khi bấm nút Đăng nhập
  const handleLogin = async (e) => {

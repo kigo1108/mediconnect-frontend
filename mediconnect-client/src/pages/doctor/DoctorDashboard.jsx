@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 // Import component Hồ sơ bác sĩ (Đảm bảo bạn đã tạo tệp này)
 import HoSoBacSi from './HoSoBacSi'; 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const getValue = (obj, keys, fallback = '') => {
   for (const key of keys) {
@@ -21,6 +22,7 @@ export default function DoctorDashboard({ token }) {
   const navigate = useNavigate();
 
   const axiosConfig = { headers: { Authorization: `Bearer ${token}` } };
+  
 
   useEffect(() => {
     if (!token) return;

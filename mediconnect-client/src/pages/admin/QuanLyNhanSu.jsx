@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function QuanLyNhanSu({ token }) {
   // Dữ liệu từ API
@@ -25,7 +26,7 @@ export default function QuanLyNhanSu({ token }) {
 
   const axiosConfig = { headers: { 'Authorization': `Bearer ${token}` } };
 
-  const API_BASE_URL = import.meta.env.VITE_API_URL;
+  
 
   useEffect(() => {
     layDanhSachBacSi();

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 export default function PrintPrescription() {
     const { recordId } = useParams();
     const navigate = useNavigate();
@@ -9,7 +10,7 @@ export default function PrintPrescription() {
     const [record, setRecord] = useState(null);
     const [loading, setLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState("");
-    const API_BASE_URL = import.meta.env.VITE_API_URL;
+    
 
     useEffect(() => {
         const fetchRecordDetail = async () => {

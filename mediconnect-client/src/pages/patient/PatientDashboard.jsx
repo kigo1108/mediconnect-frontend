@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function PatientDashboard({ token }) {
   const [danhSachLich, setDanhSachLich] = useState([]);
@@ -27,7 +28,7 @@ export default function PatientDashboard({ token }) {
 
   const layDanhSachLichCuaToi = async () => {
     try {
-      const res = await axios.get('https://localhost:7071/api/Appointment/GetAllApointment', axiosConfig);
+      const res = await axios.get(`${API_BASE_URL}/api/Appointment/GetAllApointment`, axiosConfig);
       setDanhSachLich(res.data.data || res.data.Data || []);
     } catch (err) {
       setDanhSachLich([]);
@@ -38,7 +39,7 @@ export default function PatientDashboard({ token }) {
 
   const handleCheckIn = async (appointmentId) => {
     try {
-      const res = await axios.post(`https://localhost:7071/api/Appointment/${appointmentId}/check-in`, {}, axiosConfig);
+      const res = await axios.post(`${API_BASE_URL}/api/Appointment/${appointmentId}/check-in`, {}, axiosConfig);
       alert(`✅ Thành công! Số thứ tự là: ${res.data.QueueNumber || res.data.queueNumber}`);
       layDanhSachLichCuaToi();
     } catch (err) {
@@ -50,7 +51,7 @@ export default function PatientDashboard({ token }) {
   if (!window.confirm("⚠️ Bạn có chắc chắn muốn hủy lịch hẹn này không? Hành động này không thể hoàn tác.")) return;
 
   try {
-    await axios.put(`https://localhost:7071/api/Appointment/Cancel/${appointmentId}`, {}, axiosConfig);
+    await axios.put(`${API_BASE_URL}/api/Appointment/Cancel/${appointmentId}`, {}, axiosConfig);
     alert("✅ Đã hủy lịch hẹn thành công!");
     layDanhSachLichCuaToi(); // Tự động load lại bảng để thấy trạng thái chuyển sang "Đã hủy" màu đỏ
   } catch (err) {
@@ -62,7 +63,7 @@ export default function PatientDashboard({ token }) {
   const openRescheduleModal = async (appointmentId) => {
     try {
       // 1. Gọi API GetById để lấy chính xác DoctorId
-      const res = await axios.get(`https://localhost:7071/api/Appointment/GetById/${appointmentId}`, axiosConfig);
+      const res = await axios.get(`${API_BASE_URL}/api/Appointment/GetById/${appointmentId}`, axiosConfig);
       const detail = res.data.data || res.data.Data;
       
       // 2. Truyền đúng dữ liệu vào Modal
@@ -191,7 +192,7 @@ function RescheduleModal({ appointment, token, onClose, onSuccess }) {
   useEffect(() => {
     // Chỉ gọi API khi có đủ cả newDate và doctorId (doctorId bây giờ chắc chắn khác undefined)
     if (newDate && appointment.doctorId) {
-      axios.get(`https://localhost:7071/api/Schedule/Get_Doctor_Schedule?doctorId=${appointment.doctorId}&date=${newDate}`)
+      axios.get(`${API_BASE_URL}/api/Schedule/Get_Doctor_Schedule?doctorId=${appointment.doctorId}&date=${newDate}`)
         .then(res => setAvailableTimes((res.data.data || res.data.Data || []).filter(ca => !ca.IsCancelled && !ca.isCancelled)))
         .catch(() => setAvailableTimes([]));
     }
@@ -200,7 +201,7 @@ function RescheduleModal({ appointment, token, onClose, onSuccess }) {
   const handleConfirm = async () => {
     setSaving(true);
     try {
-      await axios.put('https://localhost:7071/api/Appointment/Reschedule', {
+      await axios.put(`${API_BASE_URL}/api/Appointment/Reschedule`, {
         appointmentId: appointment.id,
         newAppointmentDate: `${newDate}T${selectedTime}`
       }, { headers: { 'Authorization': `Bearer ${token}` } });

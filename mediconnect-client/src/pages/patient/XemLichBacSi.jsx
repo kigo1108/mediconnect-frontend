@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 export default function XemLichBacSi({ token }) {
   const [loading, setLoading] = useState(false);
   
@@ -21,10 +21,10 @@ export default function XemLichBacSi({ token }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const resKhoa = await axios.get('https://localhost:7071/api/Department/Get_All_Department');
+        const resKhoa = await axios.get(`${API_BASE_URL}/api/Department/Get_All_Department`);
         setDanhSachKhoa(resKhoa.data.data || resKhoa.data.Data || []);
 
-        const resBS = await axios.get('https://localhost:7071/api/Doctor/GetAllDoctors');
+        const resBS = await axios.get(`${API_BASE_URL}/api/Doctor/GetAllDoctors`);
         setDanhSachTatCaBacSi(resBS.data.data || resBS.data.Data || []);
       } catch (err) {
         console.error("Lỗi tải dữ liệu", err);
@@ -45,7 +45,7 @@ export default function XemLichBacSi({ token }) {
   const layLichTruc = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`https://localhost:7071/api/Schedule/Get_Doctor_Schedule?doctorId=${selectedBacSiId}&date=${selectedDate}`, axiosConfig);
+      const res = await axios.get(`${API_BASE_URL}/api/Schedule/Get_Doctor_Schedule?doctorId=${selectedBacSiId}&date=${selectedDate}`, axiosConfig);
       // Lọc bỏ các ca đã hủy (nếu API chưa tự lọc)
       const lichHoatDong = (res.data.data || res.data.Data || []).filter(ca => !(ca.isCancelled || ca.IsCancelled));
       setDanhSachLich(lichHoatDong);

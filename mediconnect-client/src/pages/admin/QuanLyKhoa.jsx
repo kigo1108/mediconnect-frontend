@@ -10,6 +10,8 @@ export default function QuanLyKhoa({ token }) {
   const [activeSubTab, setActiveSubTab] = useState('active'); 
 
   const axiosConfig = { headers: { 'Authorization': `Bearer ${token}` } };
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 
   useEffect(() => { 
     layDanhSachKhoa(); 
@@ -18,7 +20,7 @@ export default function QuanLyKhoa({ token }) {
   const layDanhSachKhoa = async () => {
     try {
       // API này trả về IsDeleted
-      const res = await axios.get('https://localhost:7071/api/Department/Get_All_Department');
+      const res = await axios.get(`${API_BASE_URL}/api/Department/Get_All_Department`);
       setDanhSachKhoa(res.data.data || res.data.Data || []);
     } catch (err) { 
       console.log(err); 

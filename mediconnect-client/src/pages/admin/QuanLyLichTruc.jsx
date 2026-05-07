@@ -23,8 +23,8 @@ export default function QuanLyLichTruc({ token }) {
   const [editingId, setEditingId] = useState(null);
   const [doctorId, setDoctorId] = useState('');
   const [scheduleDate, setScheduleDate] = useState('');
-  const [startTime, setStartTime] = useState('13:30'); 
-  const [endTime, setEndTime] = useState('17:00');    
+  const [startTime, setStartTime] = useState('13:30');
+  const [endTime, setEndTime] = useState('17:00');
   const [maxAppointments, setMaxAppointments] = useState(20);
 
   // Danh sách các mốc giờ để render vào thẻ <select>
@@ -38,6 +38,9 @@ export default function QuanLyLichTruc({ token }) {
 
   const axiosConfig = { headers: { 'Authorization': `Bearer ${token}` } };
 
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
+
+
   useEffect(() => {
     layDanhSachBacSi();
   }, []);
@@ -46,13 +49,13 @@ export default function QuanLyLichTruc({ token }) {
     if (filterDoctorId && filterDate) {
       layDanhSachLich();
     } else {
-      setDanhSachLich([]); 
+      setDanhSachLich([]);
     }
   }, [filterDoctorId, filterDate]);
 
   const layDanhSachBacSi = async () => {
     try {
-      const res = await axios.get('https://localhost:7071/api/Doctor/GetAllDoctors', axiosConfig);
+      const res = await axios.get(`${API_BASE_URL}/api/Doctor/GetAllDoctors`, axiosConfig);
       setDanhSachBacSi(res.data.data || res.data.Data || []);
     } catch (err) { console.error("Lỗi lấy danh sách bác sĩ:", err); }
   };
@@ -61,8 +64,8 @@ export default function QuanLyLichTruc({ token }) {
     try {
       const res = await axios.get(`https://localhost:7071/api/Schedule/Admin_Get_Schedules?doctorId=${filterDoctorId}&date=${filterDate}`, axiosConfig);
       setDanhSachLich(res.data.data || res.data.Data || []);
-    } catch (err) { 
-      setDanhSachLich([]); 
+    } catch (err) {
+      setDanhSachLich([]);
     }
   };
 
@@ -77,7 +80,7 @@ export default function QuanLyLichTruc({ token }) {
 
     try {
       const payload = {
-        startTime: formatTimeForApi(startTime), 
+        startTime: formatTimeForApi(startTime),
         endTime: formatTimeForApi(endTime),
         maxAppointments: parseInt(maxAppointments)
       };
@@ -86,10 +89,10 @@ export default function QuanLyLichTruc({ token }) {
         await axios.put(`https://localhost:7071/api/Schedule/Update_Schedule?scheduleId=${editingId}`, payload, axiosConfig);
         alert("✅ Cập nhật ca làm việc thành công!");
       } else {
-        const createPayload = { 
-          ...payload, 
-          doctorId: doctorId, 
-          scheduleDate: scheduleDate 
+        const createPayload = {
+          ...payload,
+          doctorId: doctorId,
+          scheduleDate: scheduleDate
         };
         await axios.post('https://localhost:7071/api/Schedule/Create_Schedule', createPayload, axiosConfig);
         alert("✅ Tạo ca làm việc thành công!");
@@ -101,35 +104,35 @@ export default function QuanLyLichTruc({ token }) {
       }
     } catch (err) {
       alert(`⚠️ Lỗi: ${err.response?.data?.message || "Không thể lưu ca làm việc!"}`);
-    } finally { 
-      setLoading(false); 
+    } finally {
+      setLoading(false);
     }
   };
 
   const xuLyHuyCa = async (scheduleId) => {
     if (!window.confirm("CẢNH BÁO: Bạn có chắc chắn muốn hủy ca trực này không? Tất cả lịch hẹn của bệnh nhân trong ca này sẽ bị hủy!")) return;
-    
+
     try {
       await axios.delete(`https://localhost:7071/api/Schedule/Cancel_Schedule?scheduleId=${scheduleId}`, axiosConfig);
       alert("✅ Đã hủy ca trực và các lịch hẹn liên quan thành công!");
-      layDanhSachLich(); 
-    } catch (err) { 
-      alert(`⚠️ Lỗi: ${err.response?.data?.message || "Không thể hủy ca!"}`); 
+      layDanhSachLich();
+    } catch (err) {
+      alert(`⚠️ Lỗi: ${err.response?.data?.message || "Không thể hủy ca!"}`);
     }
   };
 
   const batDauSua = (lich) => {
     setEditingId(lich.id || lich.Id);
     setDoctorId(lich.doctorId || lich.DoctorId);
-    
+
     const dateStr = lich.scheduleDate || lich.ScheduleDate;
     setScheduleDate(dateStr.split('T')[0]);
-    
+
     const startStr = lich.startTime || lich.StartTime;
     const endStr = lich.endTime || lich.EndTime;
     setStartTime(startStr.substring(0, 5));
     setEndTime(endStr.substring(0, 5));
-    
+
     setMaxAppointments(lich.maxAppointments || lich.MaxAppointments);
   };
 
@@ -148,7 +151,7 @@ export default function QuanLyLichTruc({ token }) {
       <hr style={{ borderColor: '#eee' }} />
 
       <div style={{ display: 'flex', gap: '30px', marginTop: '20px' }}>
-        
+
         {/* CỘT TRÁI: FORM TẠO/SỬA LỊCH */}
         <div style={{ flex: 1, padding: '20px', border: editingId ? '2px solid #ffc107' : '1px solid #007bff', borderRadius: '8px', background: editingId ? '#fffdf5' : '#e9f5ff', height: 'fit-content' }}>
           <h3 style={{ marginTop: 0, color: editingId ? '#d39e00' : '#0056b3' }}>
@@ -191,7 +194,7 @@ export default function QuanLyLichTruc({ token }) {
             <button type="submit" disabled={loading} style={{ width: '95%', padding: '12px', background: editingId ? '#ffc107' : '#28a745', color: editingId ? 'black' : 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '15px', opacity: loading ? 0.7 : 1 }}>
               {loading ? 'Đang xử lý...' : editingId ? 'LƯU THAY ĐỔI' : 'XÁC NHẬN PHÂN CA'}
             </button>
-            
+
             {editingId && (
               <button onClick={lamMoiForm} type="button" style={{ width: '95%', padding: '10px', marginTop: '10px', background: '#6c757d', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
                 Hủy chế độ sửa
@@ -234,21 +237,21 @@ export default function QuanLyLichTruc({ token }) {
               ) : (
                 danhSachLich.map((lich, index) => (
                   <tr key={index} style={{ borderBottom: '1px solid #ddd', backgroundColor: (lich.isCancelled || lich.IsCancelled) ? '#fff3f3' : 'white' }}>
-                    
+
                     <td style={{ padding: '12px', border: '1px solid #ddd', color: '#007bff', fontWeight: 'bold' }}>
                       {lich.startTime || lich.StartTime} - {lich.endTime || lich.EndTime}
                     </td>
-                    
+
                     <td style={{ padding: '12px', border: '1px solid #ddd', fontWeight: 'bold' }}>
                       {lich.maxAppointments || lich.MaxAppointments}
                     </td>
 
                     <td style={{ padding: '12px', border: '1px solid #ddd' }}>
-                       {(lich.isCancelled || lich.IsCancelled) ? (
-                         <span style={{ color: 'red', fontWeight: 'bold', border: '1px solid red', padding: '3px 8px', borderRadius: '4px', fontSize: '12px' }}>ĐÃ HỦY</span>
-                       ) : (
-                         <span style={{ color: 'green', fontWeight: 'bold', fontSize: '13px' }}>Hoạt động</span>
-                       )}
+                      {(lich.isCancelled || lich.IsCancelled) ? (
+                        <span style={{ color: 'red', fontWeight: 'bold', border: '1px solid red', padding: '3px 8px', borderRadius: '4px', fontSize: '12px' }}>ĐÃ HỦY</span>
+                      ) : (
+                        <span style={{ color: 'green', fontWeight: 'bold', fontSize: '13px' }}>Hoạt động</span>
+                      )}
                     </td>
 
                     <td style={{ padding: '12px', border: '1px solid #ddd' }}>

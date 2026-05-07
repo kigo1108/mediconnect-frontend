@@ -11,6 +11,7 @@ export default function DashboardAnalytics({ token: propToken }) {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
 
   // Tự động lấy token từ localStorage nếu prop bị trống (để chống văng trang)
   const token = localStorage.getItem('token') || propToken;
@@ -30,7 +31,7 @@ export default function DashboardAnalytics({ token: propToken }) {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await axios.get('https://localhost:7071/api/Admin/dashboard-stats', axiosConfig);
+        const res = await axios.get(`${API_BASE_URL}/api/Admin/dashboard-stats`, axiosConfig);
         // Lưu ý: Tên biến phải khớp với DTO bên C# (thường là chữ thường ở đầu khi qua JSON)
         setStats(res.data.data || res.data.Data);
       } catch (err) {

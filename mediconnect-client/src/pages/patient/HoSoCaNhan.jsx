@@ -6,6 +6,7 @@ export default function HoSoCaNhan({ token }) {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
   // State khớp 100% với Entity Patient.cs
   const [formData, setFormData] = useState({
     fullName: '',      // Read-only vì Constructor yêu cầu lúc tạo
@@ -23,7 +24,7 @@ export default function HoSoCaNhan({ token }) {
 
   const fetchProfile = async () => {
     try {
-      const res = await axios.get('https://localhost:7071/api/Patient/my-profile', axiosConfig);
+      const res = await axios.get(`${API_BASE_URL}/api/Patient/my-profile`, axiosConfig);
       const data = res.data.data || res.data.Data;
       setProfile(data);
       
@@ -52,7 +53,7 @@ export default function HoSoCaNhan({ token }) {
         isMale: formData.isMale
       };
 
-      await axios.post('https://localhost:7071/api/Patient/update-profile', payload, axiosConfig);
+      await axios.post(`${API_BASE_URL}/api/Patient/update-profile`, payload, axiosConfig);
       alert("✅ Cập nhật hồ sơ bệnh nhân thành công!");
       setIsEditing(false);
       fetchProfile();

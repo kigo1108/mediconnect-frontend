@@ -9,6 +9,7 @@ export default function PrintPrescription() {
     const [record, setRecord] = useState(null);
     const [loading, setLoading] = useState(true);
     const [errorMsg, setErrorMsg] = useState("");
+    const API_BASE_URL = import.meta.env.VITE_API_URL;
 
     useEffect(() => {
         const fetchRecordDetail = async () => {
@@ -20,7 +21,7 @@ export default function PrintPrescription() {
                     return;
                 }
 
-                const url = `https://localhost:7071/api/Doctor/medical-record-detail/${recordId}`;
+                const url = `${API_BASE_URL}/api/Doctor/medical-record-detail/${recordId}`;
                 const res = await axios.get(url, { headers: { 'Authorization': `Bearer ${token}` } });
                 setRecord(res.data.data || res.data.Data);
             } catch (err) {

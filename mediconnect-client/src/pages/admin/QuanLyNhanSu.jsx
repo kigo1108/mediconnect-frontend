@@ -25,6 +25,8 @@ export default function QuanLyNhanSu({ token }) {
 
   const axiosConfig = { headers: { 'Authorization': `Bearer ${token}` } };
 
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     layDanhSachBacSi();
     layDanhSachKhoa();
@@ -35,21 +37,21 @@ export default function QuanLyNhanSu({ token }) {
   const layDanhSachUser = async (search = "") => {
     try {
       // Gọi API kèm query search để xử lý 100.000 người ở Backend
-      const res = await axios.get(`https://localhost:7071/api/Admin/get_users_for_assignment?search=${search}`, axiosConfig);
+      const res = await axios.get(`${API_BASE_URL}/api/Admin/get_users_for_assignment?search=${search}`, axiosConfig);
       setDanhSachUser(res.data.data || res.data.Data || []);
     } catch (err) { console.error("Lỗi lấy danh sách user:", err); }
   };
 
   const layDanhSachBacSi = async () => {
     try {
-      const res = await axios.get('https://localhost:7071/api/Doctor/GetAllDoctors', axiosConfig);
+      const res = await axios.get(`${API_BASE_URL}/api/Doctor/GetAllDoctors`, axiosConfig);
       setDanhSachBacSi(res.data.data || res.data.Data || []);
     } catch (err) { console.error(err); }
   };
 
   const layDanhSachKhoa = async () => {
     try {
-      const res = await axios.get('https://localhost:7071/api/Department/Get_All_Department');
+      const res = await axios.get(`${API_BASE_URL}/api/Department/Get_All_Department`);
       setDanhSachKhoa(res.data.data || res.data.Data || []);
     } catch (err) { console.error(err); }
   };
@@ -74,7 +76,7 @@ export default function QuanLyNhanSu({ token }) {
         } : null
       };
 
-      await axios.post('https://localhost:7071/api/Admin/assign_role', payload, axiosConfig);
+      await axios.post(`${API_BASE_URL}/api/Admin/assign_role`, payload, axiosConfig);
 
       alert(`✅ Cấp quyền ${newRole} cho tài khoản ${selectedUser?.userName || ""} thành công!`);
 
@@ -104,7 +106,7 @@ export default function QuanLyNhanSu({ token }) {
   const xuLyCapNhat = async (e) => {
     e.preventDefault();
     try {
-      await axios.put('https://localhost:7071/api/Doctor/Update_Doctor', {
+      await axios.put(`${API_BASE_URL}/api/Doctor/Update_Doctor`, {
         id: bacSiDangSua.id || bacSiDangSua.Id || bacSiDangSua.doctorId || bacSiDangSua.DoctorId,
         specialty: chuyenKhoaMoi,
         departmentId: khoaMoiId

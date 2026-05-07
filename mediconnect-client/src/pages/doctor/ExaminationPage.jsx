@@ -40,6 +40,8 @@ export default function ExaminationPage({ token }) {
   const [recordId, setRecordId] = useState(null);
   const [isReadOnly, setIsReadOnly] = useState(false);
 
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
+
   const [formData, setFormData] = useState({
     appointmentId,
     symptoms: '',
@@ -60,8 +62,8 @@ export default function ExaminationPage({ token }) {
     const fetchInitialData = async () => {
       try {
         const [resAppt, resMed] = await Promise.all([
-          axios.get(`https://localhost:7071/api/Appointment/GetById/${appointmentId}`, axiosConfig),
-          axios.get('https://localhost:7071/api/Medicine/Get_All_Medicine_In_Stock', axiosConfig),
+          axios.get(`${API_BASE_URL}/api/Appointment/GetById/${appointmentId}`, axiosConfig),
+          axios.get(`${API_BASE_URL}/api/Medicine/Get_All_Medicine_In_Stock`, axiosConfig),
         ]);
 
         setAppointmentInfo(resAppt.data.data || resAppt.data.Data);
@@ -71,7 +73,7 @@ export default function ExaminationPage({ token }) {
         if (recordIdFromDashboard) {
           try {
             const resDetail = await axios.get(
-              `https://localhost:7071/api/Doctor/medical-record-detail/${recordIdFromDashboard}`,
+              `${API_BASE_URL}/api/Doctor/medical-record-detail/${recordIdFromDashboard}`,
               axiosConfig
             );
             const recordDetail = resDetail.data.data || resDetail.data.Data;
@@ -104,7 +106,7 @@ export default function ExaminationPage({ token }) {
     const uploadData = new FormData();
     uploadData.append('file', file);
     try {
-      const res = await axios.post('https://localhost:7071/api/Upload/file', uploadData, {
+      const res = await axios.post(`${API_BASE_URL}/api/Upload/file`, uploadData, {
         headers: { ...axiosConfig.headers, 'Content-Type': 'multipart/form-data' },
       });
       handleAttachmentChange(index, 'fileUrl', res.data.fileUrl || res.data.FileUrl);
@@ -182,9 +184,9 @@ export default function ExaminationPage({ token }) {
     };
 
     if (recordId) {
-      await axios.put('https://localhost:7071/api/Doctor/Update_Medical_Record', payload, axiosConfig);
+      await axios.put(`${API_BASE_URL}/api/Doctor/Update_Medical_Record`, payload, axiosConfig);
     } else {
-      await axios.post('https://localhost:7071/api/Doctor/Create_Medical_Record', payload, axiosConfig);
+      await axios.post(`${API_BASE_URL}/api/Doctor/Create_Medical_Record`, payload, axiosConfig);
     }
   };
 
@@ -222,7 +224,7 @@ export default function ExaminationPage({ token }) {
     setSubmitting(true);
     try {
       await upsertDraftRecord();
-      await axios.put(`https://localhost:7071/api/Doctor/Mark_comple_Medical_Record?medicalRecordId=${recordId}`, {}, axiosConfig);
+      await axios.put(`${API_BASE_URL}/api/Doctor/Mark_comple_Medical_Record?medicalRecordId=${recordId}`, {}, axiosConfig);
       alert('✅ Đã khóa bệnh án thành công!');
       navigate('/doctor');
     } catch (err) {

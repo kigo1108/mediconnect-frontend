@@ -50,7 +50,7 @@ export default function DatLichKham({ token }) {
       await Promise.all(bacSiTrongKhoa.map(async (bs) => {
         try {
           const doctorId = bs.id || bs.Id;
-          const res = await axios.get(`https://localhost:7071/api/Schedule/Get_Doctor_Schedule?doctorId=${doctorId}&date=${selectedDate}`);
+          const res = await axios.get(`${API_BASE_URL}/api/Schedule/Get_Doctor_Schedule?doctorId=${doctorId}&date=${selectedDate}`);
           
           const caHoatDong = (res.data.data || res.data.Data || []).filter(ca => !(ca.isCancelled || ca.IsCancelled));
           
@@ -76,14 +76,14 @@ export default function DatLichKham({ token }) {
   // ==========================
   const layDanhSachKhoa = async () => {
     try {
-      const res = await axios.get('https://localhost:7071/api/Department/Get_All_Department');
+      const res = await axios.get(`${API_BASE_URL}/api/Department/Get_All_Department`);
       setDanhSachKhoa(res.data.data || res.data.Data || []);
     } catch (err) { console.error("Lỗi lấy Khoa"); }
   };
 
   const layDanhSachBacSi = async () => {
     try {
-      const res = await axios.get('https://localhost:7071/api/Doctor/GetAllDoctors');
+      const res = await axios.get(`${API_BASE_URL}/api/Doctor/GetAllDoctors`);
       setDanhSachTatCaBacSi(res.data.data || res.data.Data || []);
     } catch (err) { console.error("Lỗi lấy Bác sĩ"); }
   };
@@ -122,7 +122,7 @@ export default function DatLichKham({ token }) {
         appointmentDate: appointmentDateTime
       };
 
-      await axios.post('https://localhost:7071/api/Appointment/Create_Appointment', payload, axiosConfig);
+      await axios.post(`${API_BASE_URL}/api/Appointment/Create_Appointment`, payload, axiosConfig);
       alert("🎉 Đặt lịch khám thành công! Vui lòng đến đúng giờ để làm thủ tục.");
       
       // Đặt xong thì Reset sạch form

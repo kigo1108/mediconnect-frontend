@@ -42,21 +42,21 @@ export default function DoctorDashboard({ token }) {
 
   const fetchWaitingPatients = async () => {
     try {
-      const res = await axios.get('https://localhost:7071/api/Doctor/waiting_patients', axiosConfig);
+      const res = await axios.get(`${API_BASE_URL}/api/Doctor/waiting_patients`, axiosConfig);
       setWaitingList(res.data.data || res.data.Data || []);
     } catch { setWaitingList([]); }
   };
 
   const fetchDraftRecords = async () => {
     try {
-      const res = await axios.get('https://localhost:7071/api/Doctor/Get_Record?isDraft=true', axiosConfig);
+      const res = await axios.get(`${API_BASE_URL}/api/Doctor/Get_Record?isDraft=true`, axiosConfig);
       setDraftRecords(res.data.data || res.data.Data || []);
     } catch { setDraftRecords([]); }
   };
 
   const fetchCompletedRecords = async () => {
     try {
-      const res = await axios.get('https://localhost:7071/api/Doctor/Get_Record?isDraft=false', axiosConfig);
+      const res = await axios.get(`${API_BASE_URL}/api/Doctor/Get_Record?isDraft=false`, axiosConfig);
       setCompletedRecords(res.data.data || res.data.Data || []);
     } catch { setCompletedRecords([]); }
   };
@@ -64,7 +64,7 @@ export default function DoctorDashboard({ token }) {
   const fetchMySchedules = async () => {
     try {
       const today = new Date().toISOString().split('T')[0];
-      const res = await axios.get(`https://localhost:7071/api/Schedule/My_Schedules?date=${today}`, axiosConfig);
+      const res = await axios.get(`${API_BASE_URL}/api/Schedule/My_Schedules?date=${today}`, axiosConfig);
       setSchedules(res.data.data || res.data.Data || []);
     } catch { setSchedules([]); }
   };
@@ -78,7 +78,7 @@ export default function DoctorDashboard({ token }) {
     if (!window.confirm("🔒 CẢNH BÁO: Bệnh án sẽ chuyển sang Đã hoàn thành và không thể sửa lại. Bệnh nhân có thể thanh toán. Bạn chắc chắn muốn khóa?")) return;
 
     try {
-      await axios.put(`https://localhost:7071/api/Doctor/Mark_comple_Medical_Record?medicalRecordId=${recordId}`, {}, axiosConfig);
+      await axios.put(`${API_BASE_URL}/api/Doctor/Mark_comple_Medical_Record?medicalRecordId=${recordId}`, {}, axiosConfig);
       alert("✅ Đã khóa bệnh án thành công!");
       // Tải lại danh sách ngay lập tức để cập nhật UI
       fetchDraftRecords();

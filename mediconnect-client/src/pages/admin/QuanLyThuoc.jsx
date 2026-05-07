@@ -16,11 +16,13 @@ export default function QuanLyThuoc({ token }) {
   }, []);
 
   const axiosConfig = { headers: { 'Authorization': `Bearer ${token}` } };
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 
   // 1. GET: Lấy danh sách thuốc
   const layDanhSachThuoc = async () => {
     try {
-      const res = await axios.get('https://localhost:7071/api/Medicine/Get_All_Medicine_In_Stock', axiosConfig);
+      const res = await axios.get(`${API_BASE_URL}/api/Medicine/Get_All_Medicine_In_Stock`, axiosConfig);
       setDanhSachThuoc(res.data.data || res.data.Data || []);
     } catch (err) {
       console.log(err);
@@ -31,7 +33,7 @@ export default function QuanLyThuoc({ token }) {
   const xuLyThemThuoc = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('https://localhost:7071/api/Medicine/Add_Medicine_To_Stock', {
+      await axios.post(`${API_BASE_URL}/api/Medicine/Add_Medicine_To_Stock`, {
         name: tenThuoc,
         unitPrice: parseFloat(giaTien),
         stockQuantity: parseInt(soLuong),
@@ -59,7 +61,7 @@ export default function QuanLyThuoc({ token }) {
     try {
       // Đưa tham số MedicineID và Status lên thẳng URL thay vì để trong Body
       await axios.put(
-        `https://localhost:7071/api/Medicine/Update_Medicine_Status?MedicineID=${id}&Status=${!trangThaiHienTai}`,
+        `${API_BASE_URL}/api/Medicine/Update_Medicine_Status?MedicineID=${id}&Status=${!trangThaiHienTai}`,
         null,
         axiosConfig
       );
@@ -83,7 +85,7 @@ export default function QuanLyThuoc({ token }) {
     }
 
     try {
-      await axios.put('https://localhost:7071/api/Medicine/Update_Medicine_Price', {
+      await axios.put(`${API_BASE_URL}/api/Medicine/Update_Medicine_Price`, {
         medicineID: id,
         newPrice
       }, axiosConfig);
@@ -107,7 +109,7 @@ export default function QuanLyThuoc({ token }) {
     }
 
     try {
-      await axios.put('https://localhost:7071/api/Medicine/Update_Medicine_Stock', {
+      await axios.put(`${API_BASE_URL}/api/Medicine/Update_Medicine_Stock`, {
         medicineID: id,
         addedQuantity
       }, axiosConfig);

@@ -6,6 +6,8 @@ export default function PatientManagement({ token }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState(null);
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 
   // Cấu hình Header chứa Token để gửi kèm API Admin
   const axiosConfig = { headers: { Authorization: `Bearer ${token}` } };
@@ -15,7 +17,7 @@ export default function PatientManagement({ token }) {
     setLoading(true);
     try {
       const res = await axios.get(
-        `https://localhost:7071/api/Admin/Get_All_Patients?search=${searchQuery}`,
+        `${API_BASE_URL}/api/Admin/Get_All_Patients?search=${searchQuery}`,
         axiosConfig
       );
       // Hỗ trợ cả 2 chuẩn viết hoa/thường từ Backend trả về
@@ -50,7 +52,7 @@ export default function PatientManagement({ token }) {
     setProcessingId(patientId); // Hiển thị trạng thái đang xử lý cho riêng nút này
     try {
       await axios.put(
-        `https://localhost:7071/api/Admin/Toggle_Lock_Patient/${patientId}`,
+        `${API_BASE_URL}/api/Admin/Toggle_Lock_Patient/${patientId}`,
         {},
         axiosConfig
       );

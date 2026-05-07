@@ -41,7 +41,7 @@ export default function LichSuKham({ token }) {
       return;
     }
     try {
-      const res = await axios.get('https://localhost:7071/api/Appointment/Get_History', axiosConfig);
+      const res = await axios.get(`${API_BASE_URL}/api/Appointment/Get_History`, axiosConfig);
       const rawHistory = res.data.data || res.data.Data || [];
       setHistory(rawHistory);
     } catch (err) {
@@ -63,7 +63,7 @@ export default function LichSuKham({ token }) {
     try {
       // Gửi raw string ID lên C#
       const res = await axios.post(
-        `https://localhost:7071/api/Patient/my-medical-records`, 
+        `${API_BASE_URL}/api/Patient/my-medical-records`, 
         JSON.stringify(medicalRecordId),
         {
           headers: { 

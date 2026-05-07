@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 export default function HoSoBacSi({ token }) {
   const [profile, setProfile] = useState({
     fullName: '',
@@ -15,6 +15,8 @@ export default function HoSoBacSi({ token }) {
 
   const axiosConfig = { headers: { Authorization: `Bearer ${token}` } };
 
+  
+
   useEffect(() => {
     fetchProfile();
   }, [token]);
@@ -22,7 +24,7 @@ export default function HoSoBacSi({ token }) {
   const fetchProfile = async () => {
     try {
       // Gọi API Get_My_Profile
-      const res = await axios.get('https://localhost:7071/api/Doctor/Get_My_Profile', axiosConfig);
+      const res = await axios.get(`{API_BASE_URL}/api/Doctor/Get_My_Profile`, axiosConfig);
       const serverData = res.data.data || res.data.Data;
 
       if (serverData) {
@@ -52,7 +54,7 @@ export default function HoSoBacSi({ token }) {
     setUploading(true);
     try {
       // Sử dụng UploadController hiện có của bạn
-      const res = await axios.post('https://localhost:7071/api/Upload/file', formData, {
+      const res = await axios.post(`${API_BASE_URL}/api/Upload/file`, formData, {
         headers: { ...axiosConfig.headers, 'Content-Type': 'multipart/form-data' }
       });
       const newUrl = res.data.fileUrl || res.data.FileUrl;
@@ -69,7 +71,7 @@ export default function HoSoBacSi({ token }) {
     e.preventDefault();
     try {
       // Gửi đúng các trường DTO Backend yêu cầu
-      await axios.put('https://localhost:7071/api/Doctor/Update_My_Profile', {
+      await axios.put(`${API_BASE_URL}/api/Doctor/Update_My_Profile`, {
         phoneNumber: profile.phoneNumber,
         avatar: profile.avatar,
         biography: profile.biography

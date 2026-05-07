@@ -3,11 +3,12 @@ function RescheduleModal({ appointment, token, onClose, onSuccess }) {
   const [availableTimes, setAvailableTimes] = useState([]);
   const [selectedTime, setSelectedTime] = useState('');
   const [saving, setSaving] = useState(false);
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
 
   // Mỗi khi chọn ngày, tự động đi tìm ca trực của bác sĩ đó [cite: 13]
   useEffect(() => {
     if (newDate && appointment?.doctorId) {
-      axios.get(`https://localhost:7071/api/Schedule/Get_Doctor_Schedule?doctorId=${appointment.doctorId}&date=${newDate}`)
+      axios.get(`${API_BASE_URL}/api/Schedule/Get_Doctor_Schedule?doctorId=${appointment.doctorId}&date=${newDate}`)
         .then(res => {
           const caTruc = res.data.data || res.data.Data || [];
           // Lọc bỏ ca hủy [cite: 13]
@@ -27,7 +28,7 @@ function RescheduleModal({ appointment, token, onClose, onSuccess }) {
         newAppointmentDate: `${newDate}T${selectedTime}` // Định dạng ISO DateTime cho C#
       };
 
-      await axios.put('https://localhost:7071/api/Appointment/Reschedule', payload, {
+      await axios.put(`${API_BASE_URL}/api/Appointment/Reschedule`, payload, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 

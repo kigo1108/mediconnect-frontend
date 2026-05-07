@@ -5,6 +5,7 @@ export default function PatientHistorySidebar({ patientId, token }) {
   const [historyList, setHistoryList] = useState([]);
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [loading, setLoading] = useState(false);
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     if (patientId) fetchHistorySummary();
@@ -12,7 +13,7 @@ export default function PatientHistorySidebar({ patientId, token }) {
 
   const fetchHistorySummary = async () => {
     try {
-      const res = await axios.get(`https://localhost:7071/api/Doctor/patient-history-summary/${patientId}`, {
+      const res = await axios.get(`${API_BASE_URL}/api/Doctor/patient-history-summary/${patientId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setHistoryList(res.data.data || res.data.Data || []);
@@ -25,7 +26,7 @@ export default function PatientHistorySidebar({ patientId, token }) {
   const fetchDetail = async (recordId) => {
     setLoading(true);
     try {
-      const res = await axios.get(`https://localhost:7071/api/Doctor/medical-record-detail/${recordId}`, {
+      const res = await axios.get(`${API_BASE_URL}/api/Doctor/medical-record-detail/${recordId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSelectedRecord(res.data.data || res.data.Data);

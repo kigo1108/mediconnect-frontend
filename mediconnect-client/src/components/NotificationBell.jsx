@@ -13,7 +13,7 @@ export default function NotificationBell() {
         if (!token) return;
         
         // Gọi API lấy dữ liệu từ Database
-        axios.get(`${API_BASE_URL}:7071/api/Notification/my-notifications`, {
+        axios.get(`${API_BASE_URL}/api/Notification/my-notifications`, {
             headers: { Authorization: `Bearer ${token}` }
         })
         .then(res => setNotifications(res.data))
@@ -25,7 +25,7 @@ export default function NotificationBell() {
         if (!token) return;
 
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl(`${API_BASE_URL}:7071/NotificationHub`, { accessTokenFactory: () => token })
+            .withUrl(`${API_BASE_URL}/NotificationHub`, { accessTokenFactory: () => token })
             .withAutomaticReconnect()
             .build();
 

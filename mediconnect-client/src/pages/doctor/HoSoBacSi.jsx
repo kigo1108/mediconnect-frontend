@@ -55,7 +55,7 @@ export default function HoSoBacSi({ token }) {
     try {
       // Sử dụng UploadController hiện có của bạn
       const res = await axios.post(`${API_BASE_URL}/api/Upload/file`, formData, {
-        headers: { ...axiosConfig.headers, 'Content-Type': 'multipart/form-data' }
+        headers: { ...axiosConfig.headers }
       });
       const newUrl = res.data.fileUrl || res.data.FileUrl;
       setProfile(prev => ({ ...prev, avatar: newUrl }));

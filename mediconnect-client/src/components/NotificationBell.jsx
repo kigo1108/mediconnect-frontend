@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import * as signalR from '@microsoft/signalr';
 import axios from 'axios'; // Dùng để gọi API
 import { toast } from 'react-toastify';
-
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 export default function NotificationBell() {
     const [notifications, setNotifications] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
@@ -13,7 +13,7 @@ export default function NotificationBell() {
         if (!token) return;
         
         // Gọi API lấy dữ liệu từ Database
-        axios.get('https://localhost:7071/api/Notification/my-notifications', {
+        axios.get(`${API_BASE_URL}:7071/api/Notification/my-notifications`, {
             headers: { Authorization: `Bearer ${token}` }
         })
         .then(res => setNotifications(res.data))
@@ -25,7 +25,7 @@ export default function NotificationBell() {
         if (!token) return;
 
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl("https://localhost:7071/NotificationHub", { accessTokenFactory: () => token })
+            .withUrl(`${API_BASE_URL}:7071/NotificationHub`, { accessTokenFactory: () => token })
             .withAutomaticReconnect()
             .build();
 
@@ -48,7 +48,7 @@ export default function NotificationBell() {
 
         try {
             // Gọi API cập nhật IsRead = true dưới DB
-            await axios.put(`https://localhost:7071/api/Notification/mark-read/${notifId}`, {}, {
+            await axios.put(`${API_BASE_URL}/api/Notification/mark-read/${notifId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 

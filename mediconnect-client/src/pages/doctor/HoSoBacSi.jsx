@@ -24,7 +24,7 @@ export default function HoSoBacSi({ token }) {
   const fetchProfile = async () => {
     try {
       // Gọi API Get_My_Profile
-      const res = await axios.get(`{API_BASE_URL}/api/Doctor/Get_My_Profile`, axiosConfig);
+      const res = await axios.get(`${API_BASE_URL}/api/Doctor/Get_My_Profile`, axiosConfig);
       const serverData = res.data.data || res.data.Data;
 
       if (serverData) {
